@@ -325,6 +325,7 @@ int main()
         );
        
         cv::VideoWriter outputVideo("result.mp4", cv::VideoWriter::fourcc('X', '2', '6', '4'), fps, frameSize);
+        std::vector<std::vector<cv::Point2f>> displacement;
         for (int i = 0; i < corners.size(); i++) {
             cv::Point2f v = find_corresponding_point(cur_frame_grayscale, next_frame_grayscale, corners[i]);
             if (v == cv::Point2f(std::numeric_limits<double>::min(), std::numeric_limits<double>::min())) {
@@ -333,16 +334,18 @@ int main()
             else {
                 cv::circle(cur_frame, corners[i], 1, cv::Scalar(0, 255, 0), -1);
                 //std::cout << "Corresponding point: " << v << std::endl;
-                corners[i] += v;
-                cv::circle(next_frame, v, 1, cv::Scalar(0, 0, 255), -1);
+                corners[i] = v;
+                
             }
 
 
         }
         cv::Mat img_to_write;
         outputVideo.write(cur_frame);
-        outputVideo.write(next_frame);
-        std::vector<std::vector<cv::Point2f>> displacement;
+
+       
+        
+       
         std::clock_t clock = std::clock();
         while (true) {
             count++;
@@ -358,7 +361,7 @@ int main()
                }
                 //std::cout << "Corresponding point: " << v << std::endl;
                 else {
-                    corners[i] += v;
+                    corners[i] = v;
                     vec_of_dicplacement.push_back(v);
                 }
 
@@ -377,7 +380,7 @@ int main()
         }
        
         cap.set(cv::CAP_PROP_POS_FRAMES, 0);
-       
+        
         cv::Mat output;
         int temp = 0;
         while (true) {
